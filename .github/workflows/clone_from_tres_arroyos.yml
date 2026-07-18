@@ -21,6 +21,17 @@ jobs:
           set -euo pipefail
           git clone --bare https://github.com/PREDWEEM/loliumTA_2026.git source.git
           cd source.git
+
+          # GitHub Actions cannot push workflow files with GITHUB_TOKEN.
+          # Remove them from the mirrored history; they are restored later
+          # through the GitHub connector with workflow write permission.
+          export FILTER_BRANCH_SQUELCH_WARNING=1
+          git filter-branch --force \
+            --index-filter 'git rm -r --cached --ignore-unmatch .github/workflows' \
+            --prune-empty \
+            --tag-name-filter cat \
+            -- --all
+
           DESTINATION="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push --force "$DESTINATION" refs/heads/main:refs/heads/main
-          git push "$DESTINATION" --tags
+          git push --force "$DESTINATION" --tags
