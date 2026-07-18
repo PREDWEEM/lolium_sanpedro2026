@@ -1,0 +1,26 @@
+name: Clone Tres Arroyos repository
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/clone_from_tres_arroyos.yml
+
+permissions:
+  contents: write
+
+jobs:
+  mirror-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror loliumTA_2026 into San Pedro repository
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git clone --bare https://github.com/PREDWEEM/loliumTA_2026.git source.git
+          cd source.git
+          DESTINATION="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force "$DESTINATION" refs/heads/main:refs/heads/main
+          git push "$DESTINATION" --tags
