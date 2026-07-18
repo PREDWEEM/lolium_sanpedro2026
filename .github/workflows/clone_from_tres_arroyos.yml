@@ -24,3 +24,5 @@ jobs:
           DESTINATION="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push --force "$DESTINATION" refs/heads/main:refs/heads/main
           git push "$DESTINATION" --tags
+
+# Trigger mirror after workflow registration.
