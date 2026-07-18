@@ -1,16 +1,13 @@
-name: Actualizar SIGA Tres Arroyos y ECMWF ENS
+name: Actualizar SIGA Tres Arroyos y ECMWF ENS — pendiente adaptación San Pedro
 
 on:
-  schedule:
-    # 07:30 y 15:30 hora Argentina (UTC-3)
-    - cron: "30 10,18 * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: actualizar-meteo-tres-arroyos
+  group: actualizar-meteo-san-pedro-pendiente
   cancel-in-progress: true
 
 jobs:
@@ -44,25 +41,18 @@ jobs:
 
       - name: Actualizar observaciones SIGA y pronóstico ECMWF ENS
         env:
-          # Tres Arroyos / INTA Barrow
+          # Configuración clonada de Tres Arroyos. Adaptar antes de ejecutar para San Pedro.
           LATITUD: "-38.388"
           LONGITUD: "-60.346"
-
-          # Descarga directa pública SIGA–INTA para estación NH0216.
           SIGA_DOWNLOAD_URL: "https://siga.inta.gob.ar/document/series/NH0216.xls"
           SIGA_METHOD: GET
-
-          # Respaldo local opcional si SIGA no responde.
           SIGA_LOCAL_FILE: NH0216.xls
-
-          # Variables opcionales si en el futuro SIGA exige parámetros o headers.
           SIGA_PARAMS_JSON: ${{ secrets.SIGA_PARAMS_JSON }}
           SIGA_POST_DATA_JSON: ${{ secrets.SIGA_POST_DATA_JSON }}
           SIGA_HEADERS_JSON: ${{ secrets.SIGA_HEADERS_JSON }}
-
-          # Mantener en false para no mezclar pronósticos vencidos con observaciones.
           RELLENAR_HUECOS_CON_PRONOSTICO_VENCIDO: "false"
         run: |
+          echo "ATENCIÓN: workflow clonado de Tres Arroyos. Adaptar estación y coordenadas antes de usar en San Pedro."
           python actualizar_meteo_tres_arroyos.py
           python postprocesar_prec_p50_tres_arroyos.py
 
@@ -74,8 +64,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           mkdir -p data/historico_pronosticos
-
-          # Guardar temporalmente los archivos generados por esta corrida.
           TMPDIR_GENERADO="$(mktemp -d)"
 
           if [ -f meteo_daily.csv ]; then
@@ -97,12 +85,9 @@ jobs:
             cp -a data/historico_pronosticos/. "$TMPDIR_GENERADO/data/historico_pronosticos/" || true
           fi
 
-          # Sincronizar con la última versión remota.
-          # Esto evita conflictos de rebase en archivos generados automáticamente.
           git fetch origin main
           git reset --hard origin/main
 
-          # Reaplicar los archivos generados por esta corrida.
           mkdir -p data/historico_pronosticos
 
           if [ -f "$TMPDIR_GENERADO/meteo_daily.csv" ]; then
@@ -128,5 +113,5 @@ jobs:
             exit 0
           fi
 
-          git commit -m "Actualiza SIGA Tres Arroyos y ECMWF ENS"
+          git commit -m "Actualiza datos meteorológicos"
           git push origin HEAD:main
