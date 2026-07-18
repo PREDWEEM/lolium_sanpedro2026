@@ -1,0 +1,71 @@
+name: Adapt repository to San Pedro v2
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/adapt_san_pedro_v2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  adapt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout adaptation branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply San Pedro adaptation
+        run: python adapt_san_pedro_once.py
+
+      - name: Validate code and configuration
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          app = Path('app_emergencia.py').read_text(encoding='utf-8')
+          updater = Path('actualizar_meteo_san_pedro.py').read_text(encoding='utf-8')
+
+          assert 'SAN PEDRO' in app
+          assert '-33.7328' in app
+          assert '-59.7965' in app
+          assert 'latitud_san_pedro' in app
+          assert app.count('["Julian_days", "TMAX", "TMIN", "Prec"]') >= 2
+          assert '["Julian_days", "TMAX_suelo", "TMIN_suelo", "Prec"]' not in app
+
+          assert 'A872890' in updater
+          assert '-33.7328' in updater
+          assert '-59.7965' in updater
+          assert 'data/siga_san_pedro_observado.csv' in updater
+          assert 'SIGA_INTA_SAN_PEDRO_A872890' in updater
+
+          assert not Path('meteo_daily.csv').exists()
+          assert not Path('validacion.xlsx').exists()
+          assert not Path('VALIDA (1).xlsx').exists()
+          assert Path('data/historico_pronosticos/.gitkeep').exists()
+          PY
+          python -m py_compile app_emergencia.py actualizar_meteo_san_pedro.py postprocesar_prec_p50_san_pedro.py app_patron2026.py
+          rm -rf __pycache__
+
+      - name: Commit adaptation
+        env:
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+          rm -f adapt_san_pedro_once.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No additional changes required."
+            exit 0
+          fi
+          git commit -m "Adapt model and weather node to San Pedro"
+          git push origin "HEAD:${HEAD_BRANCH}"
