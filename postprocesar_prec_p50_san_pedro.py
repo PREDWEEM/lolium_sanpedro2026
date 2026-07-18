@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Postproceso PREDWEEM — Tres Arroyos / INTA Barrow.
+Postproceso PREDWEEM — San Pedro / SIGA A872890.
 
 Objetivo:
 - Mantener SIGA observado sin cambios.
@@ -9,7 +9,7 @@ Objetivo:
 - Conservar la media original del ensamble en:
       Prec_Media_Ens
 
-Este archivo se ejecuta después de actualizar_meteo_tres_arroyos.py dentro del workflow.
+Este archivo se ejecuta después de actualizar_meteo_san_pedro.py dentro del workflow.
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ import pandas as pd
 
 
 ARCHIVOS = [Path("meteo_daily.csv")]
-ARCHIVOS.extend(sorted(Path("data/historico_pronosticos").glob("ecmwf_ifs_ens_025_tres_arroyos_*.csv")))
+ARCHIVOS.extend(sorted(Path("data/historico_pronosticos").glob("ecmwf_ifs_ens_025_san_pedro_*.csv")))
 
 
 def reordenar_columnas(df: pd.DataFrame) -> pd.DataFrame:

@@ -1,4 +1,4 @@
-name: Despertar Streamlit — pendiente adaptación San Pedro
+name: Despertar Streamlit San Pedro
 
 on:
   workflow_dispatch:
@@ -21,6 +21,6 @@ jobs:
           npx playwright install chromium --with-deps
 
       - name: Ejecutar script de despertar
-        run: |
-          echo "ATENCIÓN: verificar la URL de San Pedro en wake_up_script.js antes de ejecutar."
-          node wake_up_script.js
+        env:
+          STREAMLIT_URL: ${{ secrets.STREAMLIT_URL }}
+        run: node wake_up_script.js

@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 # ===============================================================
-# 🌾 PREDWEEM INTEGRAL vK4.9.15 VISUAL V3 — LOLIUM TRES ARROYOS 2026
+# 🌾 PREDWEEM INTEGRAL vK4.9.15 VISUAL V3 — LOLIUM SAN PEDRO 2026
 # Actualización y Rigor Científico:
 # - ENTRADAS ANN CORREGIDAS: JD, TMAX aire, TMIN aire y precipitación.
-# - ADAPTACIÓN TRES ARROYOS: Coordenadas fijas en -38.4500 para ET0 Hargreaves.
+# - ADAPTACIÓN SAN PEDRO: Coordenadas fijas en -33.7328 para ET0 Hargreaves.
 # - IDENTIDAD: PREDWEEM by GUILLERMO R. CHANTRE.
 # - LATENCIA INICIAL: Bloqueo estricto de emergencia los primeros 45 días del año.
 # - ESCUDO TERMOFISIOLÓGICO: Horizonte de termoinhibición dinámico ajustado a 5 días.
 # - CHOQUE HÍDRICO: Umbral acumulado de 3 días fijado en 45 mm.
 # - PRIMER PICO VÁLIDO: La campaña se habilita únicamente cuando EMERREL > 0.70.
-# - DINÁMICA HÍDRICA CRUCIAL: Preservación del Secado Exponencial del Suelo (Factor Kr) en el BHS.
+# - MÓDULO HÍDRICO PROVISIONAL: Kr heredado de Tres Arroyos; pendiente de validación local en San Pedro.
 # - VALIDACIÓN POR EVENTO REAL: Integración Dinámica por Intervalo Variable (Event-to-Event).
 # - OPTIMIZADOR 2D: Barrido enfocado puramente en la física del suelo (W_Max y Ke) usando ventanas reales.
 # - COINCIDENCIA OPERATIVA: Métricas F1-Score, Exactitud Global y Matriz de Confusión interactiva.
@@ -32,9 +32,9 @@ import base64
 # 1. PANTALLA DE CARGA ULTRARRÁPIDA
 # ---------------------------------------------------------
 if 'arranque_fase' not in st.session_state:
-    st.set_page_config(page_title="PREDWEEM TRES ARROYOS INTEGRAL", layout="wide", page_icon="🌾")
+    st.set_page_config(page_title="PREDWEEM SAN PEDRO INTEGRAL", layout="wide", page_icon="🌾")
     st.markdown("<br><br><br>", unsafe_allow_html=True)
-    st.info("🚜 **Iniciando Servidor PREDWEEM Tres Arroyos...** Cargando motores por evento real.")
+    st.info("🚜 **Iniciando Servidor PREDWEEM San Pedro...** Cargando motores por evento real.")
     st.progress(20)
     
     st.session_state.arranque_fase = 1
@@ -138,7 +138,7 @@ def calculate_tt_scalar(t, t_base, t_opt, t_crit):
     elif t < t_crit: return (t - t_base) * ((t_crit - t) / (t_crit - t_opt))
     else: return 0.0
 
-def calcular_et0_hargreaves(jday, tmax, tmin, latitud=-38.45):
+def calcular_et0_hargreaves(jday, tmax, tmin, latitud=-33.7328):
     lat_rad = np.radians(latitud)
     dr = 1 + 0.033 * np.cos(2 * np.pi / 365 * jday)
     dec = 0.409 * np.sin(2 * np.pi / 365 * jday - 1.39)
@@ -149,7 +149,7 @@ def calcular_et0_hargreaves(jday, tmax, tmin, latitud=-38.45):
     trange = np.maximum(tmax - tmin, 0)
     return np.maximum(0.0023 * ra_mm * (tmean + 17.8) * np.sqrt(trange), 0)
 
-# Factor Kr — Secado exponencial específico de Tres Arroyos
+# Factor Kr — heredado de Tres Arroyos; pendiente de validación local en San Pedro
 def balance_hidrico_superficial(prec, et0, w_max=15.0, ke_suelo=0.4):
     n = len(prec)
     w = np.zeros(n)
@@ -213,7 +213,7 @@ def load_data(file_uploader, default_name):
     elif (BASE / f"{default_name}.xlsx").exists():
         return pd.read_excel(BASE / f"{default_name}.xlsx")
     
-    github_url = f"https://raw.githubusercontent.com/PREDWEEM/LOLIUM_TA2026/main/{default_name}.csv"
+    github_url = f"https://raw.githubusercontent.com/PREDWEEM/lolium_sanpedro2026/main/{default_name}.csv"
     try:
         return pd.read_csv(github_url)
     except:
@@ -346,7 +346,7 @@ def optimizar_parametros_hidricos_2d(
     df_meteo,
     df_campo,
     modelo_ann,
-    latitud_ta=-38.45,
+    latitud_san_pedro=-33.7328,
     umbral_choque_hidrico=45.0
 ):
     df = df_meteo.copy()
@@ -357,7 +357,7 @@ def optimizar_parametros_hidricos_2d(
     amplitud_termica = (df["TMAX"] - df["TMIN"]) / 2
     df["TMAX_suelo"] = df["Tmedia_aire"] + (amplitud_termica * 0.90)
     df["TMIN_suelo"] = df["Tmedia_aire"] - (amplitud_termica * 0.90)
-    df["ET0"] = calcular_et0_hargreaves(df["Julian_days"].values, df["TMAX"].values, df["TMIN"].values, latitud=latitud_ta)
+    df["ET0"] = calcular_et0_hargreaves(df["Julian_days"].values, df["TMAX"].values, df["TMIN"].values, latitud=latitud_san_pedro)
     
     X = df[["Julian_days", "TMAX", "TMIN", "Prec"]].to_numpy(float)
     emerrel_raw, _ = modelo_ann.predict(X)
@@ -433,14 +433,14 @@ def optimizar_parametros_hidricos_2d(
 # ---------------------------------------------------------
 modelo_ann, cluster_model = load_models()
 
-st.title("🌾 PREDWEEM LOLIUM — TRES ARROYOS (BA) lat=-38.4500 lon=-60.2763")
-st.caption("Tres Arroyos · VISUAL V3 · ventana eficiente verde · exportación PNG de alta resolución")
+st.title("🌾 PREDWEEM LOLIUM — SAN PEDRO (BA) lat=-33.7328 lon=-59.7965")
+st.caption("San Pedro · configuración geográfica preliminar · parámetros ecofisiológicos pendientes de validación local")
 
 with st.expander("📂 1. Datos del Lote", expanded=True):
     col_upload, col_rastrojo = st.columns(2)
     
     with col_upload:
-        archivo_meteo = st.file_uploader("1. Clima (Tres Arroyos)", type=["xlsx", "csv"])
+        archivo_meteo = st.file_uploader("1. Clima (San Pedro)", type=["xlsx", "csv"])
         archivo_campo = st.file_uploader("2. Campo (Validación Real Variable)", type=["xlsx", "csv"])
         
     with col_rastrojo:
@@ -472,10 +472,10 @@ with st.expander("📂 1. Datos del Lote", expanded=True):
             st.markdown(html_card, unsafe_allow_html=True)
 
 df_meteo_raw = load_data(archivo_meteo, "meteo_daily")
-df_campo_raw = load_data(archivo_campo, "tres_arroyos_campo")
+df_campo_raw = load_data(archivo_campo, "san_pedro_campo")
 
 # --- SIDEBAR ---
-st.sidebar.image("https://raw.githubusercontent.com/PREDWEEM/LOLIUM_TA2026/main/logo.png", width="stretch")
+st.sidebar.image("https://raw.githubusercontent.com/PREDWEEM/lolium_sanpedro2026/main/logo.png", width="stretch")
 
 st.sidebar.markdown("## ⚙️ 2. Fisiología y Logística")
 umbral_er = st.sidebar.slider("Umbral Alerta Temprana", 0.001, 0.80, 0.001)
@@ -534,7 +534,7 @@ with st.sidebar.expander("🛠️ Modo Dev: Calibrador Bio-Físico 2D", expanded
                     df_meteo_opt,
                     df_campo_opt,
                     modelo_ann,
-                    latitud_ta=-38.4500,
+                    latitud_san_pedro=-33.7328,
                     umbral_choque_hidrico=umbral_choque_hidrico
                 )
                 
@@ -581,8 +581,8 @@ if df_meteo_raw is not None and modelo_ann is not None:
     mask_ruptura = (df["Julian_days"] > 45) & (df["Julian_days"] <= 110) & (df["Prec_3d"] >= umbral_choque_hidrico)
     df.loc[mask_ruptura, "EMERREL"] = np.maximum(df.loc[mask_ruptura, "EMERREL"], 0.75)
 
-    # Balance Hídrico Superficial (Tres Arroyos con secado exponencial Kr)
-    df["ET0"] = calcular_et0_hargreaves(df["Julian_days"].values, df["TMAX"].values, df["TMIN"].values, latitud=-38.4500)
+    # Balance Hídrico Superficial (Kr heredado; pendiente de validación en San Pedro)
+    df["ET0"] = calcular_et0_hargreaves(df["Julian_days"].values, df["TMAX"].values, df["TMIN"].values, latitud=-33.7328)
     df["W_superficial"] = balance_hidrico_superficial(df["Prec"].values, df["ET0"].values, w_max=w_max_val, ke_suelo=ke_val)
     humedad_relativa = df["W_superficial"] / w_max_val
     df["Hydric_Factor"] = 1 / (1 + np.exp(-10 * (humedad_relativa - 0.3)))
@@ -707,7 +707,7 @@ if df_meteo_raw is not None and modelo_ann is not None:
 
     # FRONT-END VISUAL
     colorscale_hard = [[0.0, "green"], [0.01, "green"], [0.02, "red"], [1.0, "red"]]
-    st.plotly_chart(go.Figure(data=go.Heatmap(z=[df["EMERREL"].values], x=df["Fecha"], y=["Emergencia"], colorscale=colorscale_hard, zmin=0, zmax=1, showscale=False)).update_layout(height=120, margin=dict(t=30, b=0, l=10, r=10), title="Mapa de Riesgo Temporal (Tasa Diaria Tres Arroyos)"), width="stretch")
+    st.plotly_chart(go.Figure(data=go.Heatmap(z=[df["EMERREL"].values], x=df["Fecha"], y=["Emergencia"], colorscale=colorscale_hard, zmin=0, zmax=1, showscale=False)).update_layout(height=120, margin=dict(t=30, b=0, l=10, r=10), title="Mapa de Riesgo Temporal (Tasa Diaria San Pedro)"), width="stretch")
 
     tab1, tab2, tab3, tab4 = st.tabs(["📊 MONITOR DE DECISIÓN", "💧 PRECIPITACIONES Y SUELO", "📈 ANÁLISIS ESTRATÉGICO", "🧪 BIO-CALIBRACIÓN"])
 
@@ -1217,7 +1217,7 @@ if df_meteo_raw is not None and modelo_ann is not None:
                     st.plotly_chart(fig_1to1_ac.update_layout(title=f"Ajuste 1:1 Acumulado (R²: {r2_acum:.3f} | RMSE: {rmse_acum:.3f})", xaxis_title="Obs. Acumulada (Norm)", yaxis_title="Sim. Acumulada (Norm)", height=380, showlegend=False, margin=dict(t=40, b=0, l=0, r=0)), width="stretch")
 
     with tab2:
-        st.header("💧 Dinámica Hídrica del Suelo (Tres Arroyos)")
+        st.header("💧 Dinámica Hídrica del Suelo (San Pedro)")
         fig_hidrico = go.Figure()
         fig_hidrico.add_trace(go.Bar(x=df["Fecha"], y=df["Prec"], name='Lluvia Diaria (mm)', marker_color='#93c5fd', opacity=0.7))
         fig_hidrico.add_trace(go.Scatter(x=df["Fecha"], y=df["W_superficial"], name='Agua en Suelo (0-10cm)', mode='lines', line=dict(color='#0284c7', width=3), fill='tozeroy', fillcolor='rgba(2, 132, 199, 0.2)'))
@@ -1225,7 +1225,7 @@ if df_meteo_raw is not None and modelo_ann is not None:
         st.plotly_chart(fig_hidrico.update_layout(title="Precipitación vs. Retención Hídrica Dinámica (Secado Kr)", xaxis_title="Fecha", yaxis_title="Milímetros (mm)", height=450, hovermode="x unified", legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)), width="stretch")
 
     with tab3:
-        st.header("🔍 Clasificación DTW (Tres Arroyos)")
+        st.header("🔍 Clasificación DTW (San Pedro)")
         df_obs = df[df["Fecha"] < pd.Timestamp("2026-05-01")].copy()
         if not df_obs.empty and df_obs["EMERREL"].sum() > 0:
             jd_corte = df_obs["Julian_days"].max()
@@ -1281,7 +1281,7 @@ if df_meteo_raw is not None and modelo_ann is not None:
             ]
         }).to_excel(writer, sheet_name='Bio_Params', index=False)
 
-    st.sidebar.download_button("📥 Descargar Reporte Tres Arroyos", output.getvalue(), "PREDWEEM_Integral_TresArroyos_vK4_9_15.xlsx")
+    st.sidebar.download_button("📥 Descargar Reporte San Pedro", output.getvalue(), "PREDWEEM_Integral_TresArroyos_vK4_9_15.xlsx")
 
 else:
-    st.info("👋 Bienvenido a PREDWEEM. Cargue los datos climáticos de Tres Arroyos para comenzar.")
+    st.info("👋 Bienvenido a PREDWEEM. Cargue los datos climáticos de San Pedro para comenzar.")

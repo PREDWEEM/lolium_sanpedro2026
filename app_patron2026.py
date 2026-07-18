@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ===============================================================
-# 🌾 PREDWEEM vK3 — LOLIUM TRES ARROYOS 2026
+# 🌾 PREDWEEM vK3 — LOLIUM SAN PEDRO 2026
 # Script Corregido y Unificado (Plotly + Robustez)
 # ===============================================================
 
@@ -14,7 +14,7 @@ from pathlib import Path
 # ---------------------------------------------------------
 # CONFIGURACIÓN INICIAL
 # ---------------------------------------------------------
-st.set_page_config(page_title="PREDWEEM vK3 – TRES ARROYOS", layout="wide", page_icon="🌾")
+st.set_page_config(page_title="PREDWEEM vK3 – SAN PEDRO", layout="wide", page_icon="🌾")
 
 # CSS para limpiar la interfaz
 hide_st_style = """
@@ -118,7 +118,7 @@ def load_models():
 # 2. UI Y CARGA DE DATOS
 # ---------------------------------------------------------
 st.sidebar.title("🌾 PREDWEEM vK3")
-st.sidebar.caption("Lolium TRES ARROYOS 2026")
+st.sidebar.caption("Lolium SAN PEDRO 2026")
 
 umbral_alerta = st.sidebar.slider("Umbral de Alerta (Emergencia)", 0.1, 1.0, 0.5, 0.05)
 archivo_subido = st.sidebar.file_uploader("Subir Clima (Excel/CSV)", type=["xlsx", "csv"])
@@ -159,7 +159,7 @@ if df is not None and modelo_ann is not None:
     df.loc[df["Julian_days"] <= 30, "EMERREL"] = 0.0 
     
     # --- VISUALIZACIÓN ---
-    st.title("🌾 PREDWEEM vK3 — TRES ARROYOS 2026")
+    st.title("🌾 PREDWEEM vK3 — SAN PEDRO 2026")
 
     # A. MAPA SEMAFÓRICO
     colorscale = [[0, "#dcfce7"], [0.49, "#16a34a"], [0.49, "#facc15"], [0.9, "#eab308"], [0.9, "#ef4444"], [1, "#b91c1c"]]
@@ -260,7 +260,7 @@ if df is not None and modelo_ann is not None:
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, index=False)
-    st.sidebar.download_button("📥 Descargar Datos", output.getvalue(), "predweem_tres_arroyos_2026.xlsx")
+    st.sidebar.download_button("📥 Descargar Datos", output.getvalue(), "predweem_san_pedro_2026.xlsx")
 
 else:
     st.warning("👈 Cargue un archivo de clima o use los datos por defecto para visualizar el dashboard.")

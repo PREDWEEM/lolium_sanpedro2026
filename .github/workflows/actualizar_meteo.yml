@@ -1,4 +1,4 @@
-name: Actualizar SIGA Tres Arroyos y ECMWF ENS — pendiente adaptación San Pedro
+name: Actualizar SIGA San Pedro y ECMWF ENS
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: actualizar-meteo-san-pedro-pendiente
+  group: actualizar-meteo-san-pedro
   cancel-in-progress: true
 
 jobs:
@@ -41,20 +41,21 @@ jobs:
 
       - name: Actualizar observaciones SIGA y pronóstico ECMWF ENS
         env:
-          # Configuración clonada de Tres Arroyos. Adaptar antes de ejecutar para San Pedro.
-          LATITUD: "-38.388"
-          LONGITUD: "-60.346"
-          SIGA_DOWNLOAD_URL: "https://siga.inta.gob.ar/document/series/NH0216.xls"
+          LATITUD: "-33.7328"
+          LONGITUD: "-59.7965"
+
+          SIGA_DOWNLOAD_URL: "https://siga.inta.gob.ar/document/series/A872890.xls"
           SIGA_METHOD: GET
-          SIGA_LOCAL_FILE: NH0216.xls
+          SIGA_LOCAL_FILE: A872890.xls
+
           SIGA_PARAMS_JSON: ${{ secrets.SIGA_PARAMS_JSON }}
           SIGA_POST_DATA_JSON: ${{ secrets.SIGA_POST_DATA_JSON }}
           SIGA_HEADERS_JSON: ${{ secrets.SIGA_HEADERS_JSON }}
+
           RELLENAR_HUECOS_CON_PRONOSTICO_VENCIDO: "false"
         run: |
-          echo "ATENCIÓN: workflow clonado de Tres Arroyos. Adaptar estación y coordenadas antes de usar en San Pedro."
-          python actualizar_meteo_tres_arroyos.py
-          python postprocesar_prec_p50_tres_arroyos.py
+          python actualizar_meteo_san_pedro.py
+          python postprocesar_prec_p50_san_pedro.py
 
       - name: Guardar archivos actualizados
         run: |
@@ -70,15 +71,14 @@ jobs:
             cp meteo_daily.csv "$TMPDIR_GENERADO/meteo_daily.csv"
           fi
 
-          mkdir -p "$TMPDIR_GENERADO/data"
           mkdir -p "$TMPDIR_GENERADO/data/historico_pronosticos"
 
           if [ -f data/estado_actualizacion_meteo.json ]; then
             cp data/estado_actualizacion_meteo.json "$TMPDIR_GENERADO/data/estado_actualizacion_meteo.json"
           fi
 
-          if [ -f data/siga_tres_arroyos_observado.csv ]; then
-            cp data/siga_tres_arroyos_observado.csv "$TMPDIR_GENERADO/data/siga_tres_arroyos_observado.csv"
+          if [ -f data/siga_san_pedro_observado.csv ]; then
+            cp data/siga_san_pedro_observado.csv "$TMPDIR_GENERADO/data/siga_san_pedro_observado.csv"
           fi
 
           if [ -d data/historico_pronosticos ]; then
@@ -98,8 +98,8 @@ jobs:
             cp "$TMPDIR_GENERADO/data/estado_actualizacion_meteo.json" data/estado_actualizacion_meteo.json
           fi
 
-          if [ -f "$TMPDIR_GENERADO/data/siga_tres_arroyos_observado.csv" ]; then
-            cp "$TMPDIR_GENERADO/data/siga_tres_arroyos_observado.csv" data/siga_tres_arroyos_observado.csv
+          if [ -f "$TMPDIR_GENERADO/data/siga_san_pedro_observado.csv" ]; then
+            cp "$TMPDIR_GENERADO/data/siga_san_pedro_observado.csv" data/siga_san_pedro_observado.csv
           fi
 
           if [ -d "$TMPDIR_GENERADO/data/historico_pronosticos" ]; then
@@ -113,5 +113,5 @@ jobs:
             exit 0
           fi
 
-          git commit -m "Actualiza datos meteorológicos"
+          git commit -m "Actualiza SIGA San Pedro y ECMWF ENS"
           git push origin HEAD:main
