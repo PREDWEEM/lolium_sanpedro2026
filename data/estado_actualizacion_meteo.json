@@ -1,8 +1,16 @@
 {
-  "sitio": "San Pedro",
-  "estacion_siga": "A872890",
+  "ejecucion_utc": "2026-07-18T17:56:10+00:00",
+  "sitio": "San Pedro / SIGA A872890",
   "latitud": -33.7328,
   "longitud": -59.7965,
-  "estado": "pendiente_primera_actualizacion",
-  "nota": "Los parámetros ecofisiológicos heredados requieren validación local."
+  "estado_siga": "SIGA_remoto",
+  "ultima_observacion_siga": "2026-07-16",
+  "fuente_pronostico": "ECMWF_IFS_ENS_025",
+  "inicio_pronostico": "2026-07-18",
+  "fin_pronostico": "2026-07-24",
+  "huecos_observados": [
+    "2026-06-10",
+    "2026-06-11",
+    "2026-07-17"
+  ]
 }
