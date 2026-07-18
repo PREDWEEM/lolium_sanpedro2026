@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ===============================================================
-# 🌾 NODO CLIMÁTICO PREDWEEM — TRES ARROYOS / INTA BARROW
+# 🌾 NODO CLIMÁTICO PREDWEEM — SAN PEDRO / SIGA A872890
 #
 # Serie operativa:
 #   • Fechas vencidas (< hoy): observaciones diarias SIGA–INTA.
@@ -31,8 +31,8 @@ import pandas as pd
 import requests
 
 
-LATITUD = float(os.getenv("LATITUD", "-38.388"))
-LONGITUD = float(os.getenv("LONGITUD", "-60.346"))
+LATITUD = float(os.getenv("LATITUD", "-33.7328"))
+LONGITUD = float(os.getenv("LONGITUD", "-59.7965"))
 ZONA_HORARIA = "America/Argentina/Buenos_Aires"
 
 CAMPANIA_START = date(2026, 1, 1)
@@ -40,11 +40,11 @@ HORIZONTE_DIAS = 7
 TBASE = 2.0
 
 ARCHIVO_MAESTRO_DEFAULT = Path("meteo_daily.csv")
-ARCHIVO_SIGA_CACHE = Path("data/siga_tres_arroyos_observado.csv")
+ARCHIVO_SIGA_CACHE = Path("data/siga_san_pedro_observado.csv")
 DIRECTORIO_PRONOSTICOS = Path("data/historico_pronosticos")
 ARCHIVO_ESTADO = Path("data/estado_actualizacion_meteo.json")
 
-SIGA_ARCHIVO_LOCAL = Path(os.getenv("SIGA_LOCAL_FILE", "NH0216.xls"))
+SIGA_ARCHIVO_LOCAL = Path(os.getenv("SIGA_LOCAL_FILE", "A872890.xls"))
 SIGA_URL_TEMPLATE = os.getenv("SIGA_DOWNLOAD_URL", "").strip()
 SIGA_METHOD = os.getenv("SIGA_METHOD", "GET").strip().upper()
 SIGA_PARAMS_JSON = os.getenv("SIGA_PARAMS_JSON", "").strip()
@@ -255,7 +255,7 @@ def descargar_siga(fecha_inicio: date, fecha_fin: date) -> tuple[bytes, str, str
     tipo = respuesta.headers.get("content-type", "").lower()
     disposicion = respuesta.headers.get("content-disposition", "")
     coincidencia = re.search(r'filename="?([^";]+)', disposicion, flags=re.IGNORECASE)
-    nombre = coincidencia.group(1) if coincidencia else Path(url).name or "siga_tres_arroyos_descarga.xls"
+    nombre = coincidencia.group(1) if coincidencia else Path(url).name or "siga_san_pedro_descarga.xls"
 
     inicio_texto = contenido[:300].lower()
     if b"<html" in inicio_texto or b"<!doctype html" in inicio_texto:
@@ -393,7 +393,7 @@ def normalizar_dataframe_siga(tabla: pd.DataFrame, fecha_limite_exclusiva: date)
     salida = salida.sort_values("Fecha").reset_index(drop=True)
 
     salida["GD_Tb2"] = np.maximum(0.0, salida["TMEDIA"] - TBASE)
-    salida["Fuente"] = "SIGA_INTA_TRES_ARROYOS_BARROW"
+    salida["Fuente"] = "SIGA_INTA_SAN_PEDRO_A872890"
     salida["TipoDato"] = "Observado"
     salida["CalidadDato"] = "Observado_estacion"
     salida["N_miembros"] = np.nan
@@ -410,7 +410,7 @@ def obtener_siga_dataframe(fecha_inicio: date, fecha_fin: date, archivo_forzado:
 
     if SIGA_URL_TEMPLATE and archivo_forzado is None:
         try:
-            print("📡 Descargando observaciones diarias SIGA Tres Arroyos / Barrow...")
+            print("📡 Descargando observaciones diarias SIGA San Pedro / Barrow...")
             contenido, nombre, tipo = descargar_siga(fecha_inicio, fecha_fin)
             tabla = leer_tabla_siga_desde_bytes(contenido, nombre=nombre, tipo_contenido=tipo)
             df = normalizar_dataframe_siga(tabla, fecha_limite_exclusiva=fecha_fin + timedelta(days=1))
@@ -573,7 +573,7 @@ def cargar_pronostico_ecmwf() -> pd.DataFrame:
     pronostico = procesar_ecmwf_ens(datos)
     DIRECTORIO_PRONOSTICOS.mkdir(parents=True, exist_ok=True)
     marca = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    archivo = DIRECTORIO_PRONOSTICOS / f"ecmwf_ifs_ens_025_tres_arroyos_{marca}.csv"
+    archivo = DIRECTORIO_PRONOSTICOS / f"ecmwf_ifs_ens_025_san_pedro_{marca}.csv"
     escribir_csv_atomico(pronostico, archivo)
     return pronostico
 
@@ -643,7 +643,7 @@ def construir_meteo_daily(output: Path = ARCHIVO_MAESTRO_DEFAULT, siga_file: Pat
 
     estado = {
         "ejecucion_utc": fecha_utc_iso(),
-        "sitio": "Tres Arroyos / INTA Barrow",
+        "sitio": "San Pedro / SIGA A872890",
         "latitud": LATITUD,
         "longitud": LONGITUD,
         "estado_siga": estado_siga,
@@ -676,7 +676,7 @@ def validar_siga(siga_file: Path | None = None) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Actualiza meteo_daily.csv para PREDWEEM Tres Arroyos / Barrow.")
+    parser = argparse.ArgumentParser(description="Actualiza meteo_daily.csv para PREDWEEM San Pedro / Barrow.")
     parser.add_argument("--output", default=str(ARCHIVO_MAESTRO_DEFAULT), help="Archivo de salida CSV.")
     parser.add_argument("--siga-file", default=None, help="Archivo SIGA local opcional XLS/XLSX/CSV.")
     parser.add_argument("--solo-validar-siga", action="store_true", help="Solo valida SIGA y actualiza cache observado.")
