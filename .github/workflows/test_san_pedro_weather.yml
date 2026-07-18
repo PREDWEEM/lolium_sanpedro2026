@@ -1,0 +1,57 @@
+name: Test San Pedro weather integration
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/test_san_pedro_weather.yml
+
+permissions:
+  contents: read
+
+jobs:
+  test-weather:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout adaptation branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: python -m pip install requests pandas numpy xlrd openpyxl
+
+      - name: Download SIGA A872890 and ECMWF ENS
+        env:
+          LATITUD: '-33.7328'
+          LONGITUD: '-59.7965'
+          SIGA_DOWNLOAD_URL: 'https://siga.inta.gob.ar/document/series/A872890.xls'
+          SIGA_METHOD: GET
+          SIGA_LOCAL_FILE: A872890.xls
+          RELLENAR_HUECOS_CON_PRONOSTICO_VENCIDO: 'false'
+        run: |
+          python actualizar_meteo_san_pedro.py
+          python postprocesar_prec_p50_san_pedro.py
+
+      - name: Validate generated weather series
+        run: |
+          python - <<'PY'
+          import pandas as pd
+          from pathlib import Path
+
+          path = Path('meteo_daily.csv')
+          assert path.exists(), 'No se generó meteo_daily.csv'
+          df = pd.read_csv(path)
+          assert not df.empty, 'La serie meteorológica está vacía'
+          assert {'Fecha', 'TMAX', 'TMIN', 'Prec', 'Fuente'}.issubset(df.columns)
+          assert df['TMAX'].notna().any()
+          assert df['TMIN'].notna().any()
+          assert (df['Fuente'].astype(str).str.contains('SAN_PEDRO|ECMWF', regex=True)).any()
+          print(df[['Fecha', 'TMAX', 'TMIN', 'Prec', 'Fuente']].tail(10).to_string(index=False))
+          PY
