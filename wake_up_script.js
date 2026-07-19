@@ -1,7 +1,7 @@
 const { chromium } = require('playwright');
 
 (async () => {
-  const url = process.env.STREAMLIT_URL;
+  const url = 'https://appemergenciapy-rcr8vp23hogconk5efz374.streamlit.app/';
   if (!url) throw new Error('Defina STREAMLIT_URL con la aplicación de San Pedro.');
   const browser = await chromium.launch();
   const page = await browser.newPage();
