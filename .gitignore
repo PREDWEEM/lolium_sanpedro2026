@@ -1,0 +1,44 @@
+# Credenciales y secretos
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+secrets.toml
+credentials.json
+token.json
+*service-account*.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Entornos y cachés de Python
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# IDE y sistema operativo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Salidas locales y temporales
+*.log
+*.tmp
+*.bak
+~$*
+reports/
+exports/
+
+# Archivos de prueba locales que no deben versionarse
+data/private/
+data/raw_private/
+observaciones_campo_privadas/
+validacion_confidencial/
