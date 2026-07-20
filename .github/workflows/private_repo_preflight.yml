@@ -1,0 +1,70 @@
+name: Verificar despliegue privado
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verificar recursos locales requeridos
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          required_files=(
+            "app_emergencia.py"
+            "app_emergencia_core.py"
+            "meteo_daily.csv"
+            "logo.png"
+            "IW.npy"
+            "LW.npy"
+            "bias_IW.npy"
+            "bias_out.npy"
+            "modelo_clusters_k3.pkl"
+          )
+
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "ERROR: falta el archivo requerido: $file"
+              exit 1
+            fi
+          done
+
+      - name: Bloquear dependencias públicas del propio repositorio
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if grep -RIn --include='*.py' \
+            'raw.githubusercontent.com/PREDWEEM/lolium_sanpedro2026' .; then
+            echo "ERROR: se detectó una dependencia pública del propio repositorio."
+            exit 1
+          fi
+
+      - name: Verificar sintaxis Python
+        run: |
+          python -m py_compile \
+            app_emergencia.py \
+            app_emergencia_core.py \
+            actualizar_meteo_san_pedro.py \
+            postprocesar_prec_p50_san_pedro.py
