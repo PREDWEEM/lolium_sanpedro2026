@@ -24,6 +24,12 @@ La implementación de este repositorio está orientada a **San Pedro**. Sus par�
 - Los datos meteorológicos y validaciones de Tres Arroyos fueron retirados.
 - El balance Kr y los restantes parámetros ecofisiológicos se conservan provisionalmente y requieren validación local antes de uso productivo.
 
+## Despliegue desde repositorio privado
+
+La aplicación está preparada para utilizar archivos locales incluidos en el checkout privado de Streamlit y no depende de URLs públicas del propio repositorio para cargar datos meteorológicos, logo o activos del modelo.
+
+La actualización automática de SIGA–INTA y ECMWF ENS continúa ejecutándose mediante GitHub Actions. Antes de cambiar la visibilidad, revise la guía [PRIVATE_REPOSITORY.md](PRIVATE_REPOSITORY.md), autorice a Streamlit para acceder a repositorios privados y ejecute la prueba manual del workflow meteorológico.
+
 ## Condiciones de uso
 
 No se concede licencia de uso por el solo hecho de acceder al repositorio. Cualquier utilización académica, técnica, institucional o comercial que exceda la visualización del contenido requiere autorización previa y escrita del titular de los derechos correspondientes.

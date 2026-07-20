@@ -1,0 +1,14 @@
+name: Preparación privada completada
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirmar estado
+        run: echo "La preparación automática inicial ya fue aplicada. Use Verificar despliegue privado para los controles permanentes."
