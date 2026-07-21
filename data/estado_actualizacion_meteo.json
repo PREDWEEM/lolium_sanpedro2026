@@ -1,16 +1,15 @@
 {
-  "ejecucion_utc": "2026-07-21T12:08:24+00:00",
+  "ejecucion_utc": "2026-07-21T20:01:16+00:00",
   "sitio": "San Pedro / SIGA A872890",
   "latitud": -33.7328,
   "longitud": -59.7965,
   "estado_siga": "SIGA_remoto",
-  "ultima_observacion_siga": "2026-07-19",
+  "ultima_observacion_siga": "2026-07-20",
   "fuente_pronostico": "ECMWF_IFS_ENS_025",
   "inicio_pronostico": "2026-07-21",
   "fin_pronostico": "2026-07-27",
   "huecos_observados": [
     "2026-06-10",
-    "2026-06-11",
-    "2026-07-20"
+    "2026-06-11"
   ]
 }
