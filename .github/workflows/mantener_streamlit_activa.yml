@@ -1,0 +1,42 @@
+name: Mantener activa la app Streamlit
+
+on:
+  schedule:
+    # Cada 8 horas. Horarios UTC: 05:00, 13:00 y 21:00
+    # Equivale aproximadamente a 02:00, 10:00 y 18:00 de Argentina (UTC-3).
+    - cron: "0 5,13,21 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mantener-streamlit-activa-san-pedro
+  cancel-in-progress: true
+
+jobs:
+  mantener-actividad:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Registrar actividad del repositorio
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Incorporar cualquier actualización remota antes de crear el commit vacío.
+          git pull --rebase origin main
+
+          # Streamlit Community Cloud detecta actividad del repositorio.
+          # El commit es intencionalmente vacío: no altera código, datos ni modelos.
+          git commit --allow-empty -m "Mantiene activa la app Streamlit [skip ci]"
+          git push origin HEAD:main
