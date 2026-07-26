@@ -54,6 +54,7 @@ if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
                 "Cobertura de rastrojo (%)",
                 "Wmax superficial (mm)",
                 "Ke aplicado",
+                "Exponente Kr configurable",
                 "Módulo hídrico Kr",
             ],
             "Valor": [
@@ -68,6 +69,7 @@ if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
                 globals().get("cobertura_pct", ""),
                 globals().get("w_max_val", ""),
                 globals().get("ke_val", ""),
+                globals().get("exponente_kr", ""),
                 "Provisional, heredado de Tres Arroyos",
             ],
         }
@@ -132,6 +134,7 @@ if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
                 "Cobertura de rastrojo (%)",
                 "Wmax superficial (mm)",
                 "Ke",
+                "Exponente Kr",
                 "Modulador térmico diagnóstico",
                 "Temperatura base (°C)",
                 "Temperatura óptima (°C)",
@@ -156,6 +159,7 @@ if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
                 globals().get("cobertura_pct", ""),
                 globals().get("w_max_val", ""),
                 globals().get("ke_val", ""),
+                globals().get("exponente_kr", ""),
                 globals().get("mod_termico", ""),
                 globals().get("t_base_val", ""),
                 globals().get("t_opt_max", ""),
