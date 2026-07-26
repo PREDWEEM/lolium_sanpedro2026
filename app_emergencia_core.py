@@ -153,13 +153,13 @@ def calcular_et0_hargreaves(jday, tmax, tmin, latitud=-33.7328):
     trange = np.maximum(tmax - tmin, 0)
     return np.maximum(0.0023 * ra_mm * (tmean + 17.8) * np.sqrt(trange), 0)
 
-# Factor Kr — heredado de Tres Arroyos; pendiente de validación local en San Pedro
+# Factor Kr configurable; valor predeterminado unificado en 0.
 def balance_hidrico_superficial(
     prec,
     et0,
     w_max=15.0,
     ke_suelo=0.4,
-    exponente_kr=1.0,
+    exponente_kr=0.0,
     devolver_kr=False,
 ):
     """Balance hídrico común con reducción Kr configurable.
@@ -278,7 +278,7 @@ def simular_emergencia_local(
     w_max,
     umbral_termoinhibicion=24.0,
     umbral_choque_hidrico=45.0,
-    exponente_kr=1.0,
+    exponente_kr=0.0,
     latitud=-33.7328,
     latencia_jd=25,
     techo_choque=0.75,
@@ -526,7 +526,7 @@ def optimizar_parametros_hidricos_2d(
     latitud_local=-33.7328,
     umbral_choque_hidrico=45.0,
     umbral_termoinhibicion=24.0,
-    exponente_kr=1.0,
+    exponente_kr=0.0,
     calentamiento_suelo=0.0,
     tau_decaimiento=None,
     beta_decaimiento=None,
@@ -671,7 +671,7 @@ exponente_kr = st.sidebar.slider(
     "Exponente Kr (secado superficial)",
     min_value=0.0,
     max_value=2.0,
-    value=1.0,
+    value=0.0,
     step=0.1,
     help=(
         "0 = evaporación ET0×Ke constante; 1 = reducción dinámica "
