@@ -24,6 +24,16 @@ La implementación de este repositorio está orientada a **San Pedro**. Sus par�
 - Los datos meteorológicos y validaciones de Tres Arroyos fueron retirados.
 - El balance Kr y los restantes parámetros ecofisiológicos se conservan provisionalmente y requieren validación local antes de uso productivo.
 
+## Actualización meteorológica robusta
+
+La serie operativa utiliza una jerarquía explícita de fuentes:
+
+1. **SIGA–INTA A872890** como observación prioritaria y definitiva.
+2. **ECMWF IFS histórico** como cobertura provisional de cualquier fecha vencida sin una observación SIGA completa y válida.
+3. **ECMWF IFS ENS 0.25°** para hoy y los próximos seis días, con P50 operativo para TMAX, TMIN, TMEDIA y precipitación.
+
+La precipitación faltante nunca se interpreta como cero. Si falta únicamente TMEDIA y Tmax/Tmin son válidas, se deriva desde ambas temperaturas. El ensamble se empareja por identificador de miembro, exige 24 horas válidas por día y conserva medias, P10, P50 y P90 para auditoría. Los datos provisionales se reemplazan automáticamente cuando SIGA publica una observación completa.
+
 ## Despliegue desde repositorio privado
 
 La aplicación está preparada para utilizar archivos locales incluidos en el checkout privado de Streamlit y no depende de URLs públicas del propio repositorio para cargar datos meteorológicos, logo o activos del modelo.
