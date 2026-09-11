@@ -1,11 +1,11 @@
 {
-  "ejecucion_utc": "2026-09-10T21:04:45+00:00",
+  "ejecucion_utc": "2026-09-11T14:33:24+00:00",
   "sitio": "San Pedro",
   "latitud": -33.7328,
   "longitud": -59.7965,
   "estacion_siga": "A872890",
   "estado_siga": "SIGA_remoto",
-  "ultima_observacion_siga": "2026-09-06",
+  "ultima_observacion_siga": "2026-09-09",
   "tmedia_siga_derivada": [],
   "observaciones_siga_descartadas": [
     "2026-06-09",
@@ -25,9 +25,7 @@
     "2026-08-16",
     "2026-08-18",
     "2026-08-19",
-    "2026-09-07",
-    "2026-09-08",
-    "2026-09-09"
+    "2026-09-10"
   ],
   "rangos_provisionales": [
     {
@@ -51,16 +49,16 @@
       "fin": "2026-08-19"
     },
     {
-      "inicio": "2026-09-07",
-      "fin": "2026-09-09"
+      "inicio": "2026-09-10",
+      "fin": "2026-09-10"
     }
   ],
   "fuente_provisional": "ECMWF_IFS_HISTORICO",
-  "filas_provisionales": 14,
+  "filas_provisionales": 12,
   "fuente_pronostico": "ECMWF_IFS_ENS_025",
   "estadistico_operativo": "P50",
-  "inicio_pronostico": "2026-09-10",
-  "fin_pronostico": "2026-09-16",
+  "inicio_pronostico": "2026-09-11",
+  "fin_pronostico": "2026-09-17",
   "miembros_validos_min": 51,
   "huecos_finales": []
 }
