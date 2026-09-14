@@ -1,20 +1,36 @@
 # -*- coding: utf-8 -*-
-"""
-Punto de entrada de PREDWEEM San Pedro.
+"""Punto de entrada final de PREDWEEM San Pedro 2026.
 
-La aplicación científica original se conserva en ``app_emergencia_core.py``.
-Este archivo la ejecuta sin alterar su lógica y agrega, al final de toda la
-interfaz, una descarga Excel completa de los resultados generados.
+La aplicación base se conserva en ``app_emergencia_core.py`` para auditoría.
+Antes de compilarla se aplica la parametrización local congelada obtenida con
+las campañas completas 2025–2026: respuesta termohídrica continua y
+agotamiento causal de cohorte. La ANN original no se modifica.
 """
 from pathlib import Path
 
 from visualizacion_horizonte_pronostico import mostrar_horizonte_pronostico
+from sanpedro_calibracion_final import (
+    ALPHA_HIDRICA_FINAL,
+    CALIBRACION,
+    CHOQUE_HIDRICO_FINAL,
+    COBERTURA_FINAL,
+    ESCALA_LLUVIA_TH_FINAL,
+    EXPONENTE_KR_FINAL,
+    K_COHORTE_FINAL,
+    PENDIENTE_TERMOHIDRICA_FINAL,
+    T0_TERMOHIDRICO_FINAL,
+    VENTANA_TERMOHIDRICA_FINAL,
+    VERSION_MOTOR,
+    WMAX_FINAL,
+    aplicar_agotamiento_cohorte,
+    aplicar_interaccion_termohidrica,
+    parchear_core_sanpedro,
+)
 
 _CORE_APP = Path(__file__).with_name("app_emergencia_core.py")
-exec(
-    compile(_CORE_APP.read_text(encoding="utf-8"), str(_CORE_APP), "exec"),
-    globals(),
-)
+_core_source = _CORE_APP.read_text(encoding="utf-8")
+_core_source = parchear_core_sanpedro(_core_source)
+exec(compile(_core_source, str(_CORE_APP), "exec"), globals())
 
 if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
     st.divider()
@@ -42,7 +58,6 @@ def _escribir_hoja(writer, dataframe, nombre):
     hoja.set_column(0, ultima_columna, 18)
 
 
-# El botón final se muestra únicamente si el motor completó la simulación.
 if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
     reporte_excel_final = io.BytesIO()
 
@@ -50,6 +65,8 @@ if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
         {
             "Indicador": [
                 "Localidad",
+                "Versión motor local",
+                "Calibración",
                 "Fecha de generación",
                 "Inicio del conteo térmico",
                 "Fecha objetivo de control",
@@ -57,14 +74,15 @@ if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
                 "TT acumulado actual (°Cd)",
                 "TT pronosticado +7 días (°Cd)",
                 "Estado operativo",
-                "Cobertura de rastrojo (%)",
-                "Wmax superficial (mm)",
+                "Cobertura efectiva calibrada (%)",
+                "Wmax superficial calibrado (mm)",
                 "Ke aplicado",
-                "Exponente Kr configurable",
-                "Módulo hídrico Kr",
+                "Exponente Kr",
             ],
             "Valor": [
                 "San Pedro (Buenos Aires)",
+                VERSION_MOTOR,
+                CALIBRACION,
                 pd.Timestamp.now().strftime("%d/%m/%Y %H:%M"),
                 _fecha_reporte(globals().get("fecha_inicio_ventana")),
                 _fecha_reporte(globals().get("fecha_control")),
@@ -72,11 +90,10 @@ if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
                 globals().get("dga_hoy", 0.0),
                 globals().get("dga_7dias", 0.0),
                 globals().get("msg_estado", ""),
-                globals().get("cobertura_pct", ""),
-                globals().get("w_max_val", ""),
+                globals().get("cobertura_pct", COBERTURA_FINAL),
+                globals().get("w_max_val", WMAX_FINAL),
                 globals().get("ke_val", ""),
-                globals().get("exponente_kr", ""),
-                "Provisional, heredado de Tres Arroyos",
+                globals().get("exponente_kr", EXPONENTE_KR_FINAL),
             ],
         }
     )
@@ -130,18 +147,21 @@ if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
                 "Latitud",
                 "Longitud",
                 "Latencia fija (JD)",
-                "Ventana termoinhibición (días)",
-                "Umbral termoinhibición (°C)",
-                "Ventana de lluvia (días)",
-                "Choque hídrico (mm)",
+                "Motor termoinhibición",
+                "Ventana termohídrica (días)",
+                "T0 termohídrico (°C)",
+                "Alivio hídrico alpha (°C)",
+                "Pendiente logística térmica (°C)",
+                "Escala lluvia termohídrica 3d (mm)",
+                "k agotamiento de cohorte",
+                "Choque hídrico 3d (mm)",
                 "Fin choque hídrico (JD)",
                 "Techo del bypass hídrico",
                 "Umbral del primer pico",
-                "Cobertura de rastrojo (%)",
+                "Cobertura efectiva (%)",
                 "Wmax superficial (mm)",
                 "Ke",
                 "Exponente Kr",
-                "Modulador térmico diagnóstico",
                 "Temperatura base (°C)",
                 "Temperatura óptima (°C)",
                 "Temperatura crítica (°C)",
@@ -149,24 +169,26 @@ if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
                 "TT límite de ventana (°Cd)",
                 "Residualidad del herbicida (días)",
                 "Umbral de alerta temprana",
-                "Factor Kr",
             ],
             "Valor": [
                 -33.7328,
                 -59.7965,
                 25,
-                5,
-                globals().get("umbral_termoinhibicion", ""),
-                3,
-                globals().get("umbral_choque_hidrico", ""),
+                "Continuo T×H",
+                VENTANA_TERMOHIDRICA_FINAL,
+                T0_TERMOHIDRICO_FINAL,
+                ALPHA_HIDRICA_FINAL,
+                PENDIENTE_TERMOHIDRICA_FINAL,
+                ESCALA_LLUVIA_TH_FINAL,
+                K_COHORTE_FINAL,
+                CHOQUE_HIDRICO_FINAL,
                 110,
                 0.75,
-                globals().get("UMBRAL_PRIMER_PICO", ""),
-                globals().get("cobertura_pct", ""),
-                globals().get("w_max_val", ""),
+                globals().get("UMBRAL_PRIMER_PICO", 0.20),
+                COBERTURA_FINAL,
+                WMAX_FINAL,
                 globals().get("ke_val", ""),
-                globals().get("exponente_kr", ""),
-                globals().get("mod_termico", ""),
+                EXPONENTE_KR_FINAL,
                 globals().get("t_base_val", ""),
                 globals().get("t_opt_max", ""),
                 globals().get("t_critica", ""),
@@ -174,7 +196,6 @@ if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
                 globals().get("dga_critico", ""),
                 globals().get("residualidad", ""),
                 globals().get("umbral_er", ""),
-                "Dinámico: W(t-1) / Wmax; pendiente de validación local",
             ],
         }
     )
@@ -192,16 +213,14 @@ if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
         _escribir_hoja(writer, metricas_reporte, "Metricas_Validacion")
         _escribir_hoja(writer, parametros_reporte, "Parametros_Modelo")
         _escribir_hoja(writer, globals().get("df_desde_pico"), "Tiempo_Termico")
-        _escribir_hoja(writer, globals().get("tabla_optima"), "Optimizador_2D")
 
     reporte_excel_final.seek(0)
 
     st.divider()
     st.subheader("📥 Descarga final de resultados")
     st.caption(
-        "El archivo reúne los resultados diarios, la validación Event-to-Event, "
-        "las observaciones de campo, las métricas, los parámetros, el tiempo "
-        "térmico y, cuando está disponible, el calibrador biofísico 2D."
+        "El archivo reúne resultados diarios, validación Event-to-Event, "
+        "observaciones de campo, métricas, parámetros congelados y tiempo térmico."
     )
     st.download_button(
         label="📊 Descargar resultados completos en Excel",
