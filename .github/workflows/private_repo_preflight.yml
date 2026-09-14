@@ -34,6 +34,7 @@ jobs:
           required_files=(
             "app_emergencia.py"
             "app_emergencia_core.py"
+            "visualizacion_intensidad_relativa.py"
             "meteo_daily.csv"
             "logo.png"
             "IW.npy"
@@ -66,5 +67,32 @@ jobs:
           python -m py_compile \
             app_emergencia.py \
             app_emergencia_core.py \
+            visualizacion_intensidad_relativa.py \
             actualizar_meteo_san_pedro.py \
             postprocesar_prec_p50_san_pedro.py
+
+      - name: Prueba preliminar de escala relativa
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from visualizacion_intensidad_relativa import parchear_visualizacion_intensidad_relativa
+
+          core = Path("app_emergencia_core.py").read_text(encoding="utf-8")
+          patched = parchear_visualizacion_intensidad_relativa(core)
+
+          assert 'text="Intensidad relativa de emergencia (%)"' in patched
+          assert 'y=df["EMERREL_REL_PCT"]' in patched
+          assert 'y=df_campo["Campo_Normalizado_PCT"]' in patched
+          assert 'range=[0.0, 105.0]' in patched
+          assert 'tickvals=[0, 20, 40, 60, 80, 100]' in patched
+          assert 'text="Log10(EMERREL + 0,01)"' not in patched
+          assert 'y=df["EMERREL_LOG"]' not in patched
+          compile(patched, "app_emergencia_core_patched.py", "exec")
+
+          # Chequeo numérico simple de la definición visual.
+          serie = [0.0, 0.05, 0.10, 0.20]
+          maximo = max(serie)
+          relativa = [valor / maximo * 100.0 for valor in serie]
+          assert relativa == [0.0, 25.0, 50.0, 100.0]
+          print("OK: máximo visual = 100 % y el core parcheado compila.")
+          PY

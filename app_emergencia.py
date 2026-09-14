@@ -9,6 +9,7 @@ agotamiento causal de cohorte. La ANN original no se modifica.
 from pathlib import Path
 
 from visualizacion_horizonte_pronostico import mostrar_horizonte_pronostico
+from visualizacion_intensidad_relativa import parchear_visualizacion_intensidad_relativa
 from sanpedro_calibracion_final import (
     ALPHA_HIDRICA_FINAL,
     CALIBRACION,
@@ -30,6 +31,7 @@ from sanpedro_calibracion_final import (
 _CORE_APP = Path(__file__).with_name("app_emergencia_core.py")
 _core_source = _CORE_APP.read_text(encoding="utf-8")
 _core_source = parchear_core_sanpedro(_core_source)
+_core_source = parchear_visualizacion_intensidad_relativa(_core_source)
 exec(compile(_core_source, str(_CORE_APP), "exec"), globals())
 
 if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
