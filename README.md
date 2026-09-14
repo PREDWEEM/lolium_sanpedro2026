@@ -14,15 +14,30 @@ Repositorio correspondiente a la implementación de **PREDWEEM** para la predicc
 
 PREDWEEM es una herramienta de apoyo a la toma de decisiones agronómicas basada en la integración de datos meteorológicos, modelos predictivos y filtros ecofisiológicos para anticipar los flujos de emergencia de raigrás anual.
 
-La implementación de este repositorio está orientada a **San Pedro**. Sus parámetros ecofisiológicos provisionales requieren validación local antes de su utilización productiva.
+La implementación de este repositorio está orientada a **San Pedro** y utiliza una **parametrización local congelada calibrada conjuntamente con las campañas completas 2025 y 2026**. La ANN original se mantiene sin modificaciones.
 
-## Configuración San Pedro 2026
+## Configuración San Pedro 2026 — versión final
 
 - Coordenadas operativas: `-33.7328, -59.7965`.
 - Estación SIGA–INTA: `A872890`.
 - La ANN utiliza día juliano, TMAX del aire, TMIN del aire y precipitación.
-- Los datos meteorológicos y validaciones de Tres Arroyos fueron retirados.
-- El balance Kr y los restantes parámetros ecofisiológicos se conservan provisionalmente y requieren validación local antes de uso productivo.
+- Cobertura efectiva calibrada: `17.1176548 %`.
+- Wmax superficial calibrado: `21.8352965 mm`.
+- Respuesta térmica: función logística continua con `T0 = 24.5547763 °C` y ventana de `7 días`.
+- Interacción hídrica del umbral térmico: `alpha = 0.0523993 °C`.
+- Pendiente logística térmica: `0.3659931 °C`.
+- Agotamiento causal de cohorte: `k = 0.4302566`.
+- Choque hídrico: `45 mm` acumulados en 3 días.
+- Exponente Kr: `0.0`.
+- Umbral de primer pico válido: `EMERREL > 0.20`.
+
+La termoinhibición binaria anterior fue reemplazada por una interacción continua temperatura × humedad. Posteriormente se aplica un reservorio causal de cohorte que reduce la disponibilidad remanente a medida que ocurren los pulsos de emergencia. Los parámetros de esta versión quedan **congelados** para preservar reproducibilidad.
+
+Los valores exactos se documentan también en [`sanpedro_calibration_2025_2026.json`](sanpedro_calibration_2025_2026.json).
+
+## Trazabilidad del motor
+
+`app_emergencia_core.py` se conserva como base histórica y auditable. El punto de entrada `app_emergencia.py` aplica de forma determinística el módulo [`sanpedro_calibracion_final.py`](sanpedro_calibracion_final.py) antes de compilar el core. El parche exige una única coincidencia de cada bloque esperado y detiene la aplicación si el core cambia de manera incompatible, evitando actualizaciones silenciosamente parciales.
 
 ## Actualización meteorológica robusta
 
