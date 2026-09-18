@@ -1,5 +1,5 @@
 {
-  "ejecucion_utc": "2026-09-18T14:35:40+00:00",
+  "ejecucion_utc": "2026-09-18T21:07:19+00:00",
   "sitio": "San Pedro",
   "latitud": -33.7328,
   "longitud": -59.7965,
@@ -55,6 +55,7 @@
   ],
   "fuente_provisional": "ECMWF_IFS_HISTORICO",
   "filas_provisionales": 12,
+  "fecha_fin_campania": "2026-10-01",
   "fuente_pronostico": "ECMWF_IFS_ENS_025",
   "estadistico_operativo": "P50",
   "inicio_pronostico": "2026-09-18",
