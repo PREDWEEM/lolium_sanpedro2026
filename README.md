@@ -49,6 +49,17 @@ La serie operativa utiliza una jerarquía explícita de fuentes:
 
 La precipitación faltante nunca se interpreta como cero. Si falta únicamente TMEDIA y Tmax/Tmin son válidas, se deriva desde ambas temperaturas. El ensamble se empareja por identificador de miembro, exige 24 horas válidas por día y conserva medias, P10, P50 y P90 para auditoría. Los datos provisionales se reemplazan automáticamente cuando SIGA publica una observación completa.
 
+### Fin de carga de la campaña 2026
+
+La última fecha meteorológica es el **1 de octubre de 2026, inclusive**.
+El pronóstico de siete días se recorta al alcanzar ese límite, tanto en la
+serie operativa como en los nuevos archivos de pronóstico. Desde el 2 de
+octubre no se consulta el ensamble; las actualizaciones de SIGA y del puente
+provisional quedan limitadas al 1 de octubre, permitiendo incorporar la
+observación de ese día cuando se publique y reemplazar datos provisionales.
+La validación admite una serie cerrada sin pronóstico y rechaza fechas
+posteriores al cierre. Los archivos históricos existentes se conservan.
+
 ## Despliegue desde repositorio privado
 
 La aplicación está preparada para utilizar archivos locales incluidos en el checkout privado de Streamlit y no depende de URLs públicas del propio repositorio para cargar datos meteorológicos, logo o activos del modelo.
@@ -68,3 +79,4 @@ PREDWEEM es una herramienta de soporte para decisiones y no sustituye el diagnó
 ## Autoría
 
 **PREDWEEM by Guillermo R. Chantre**
+

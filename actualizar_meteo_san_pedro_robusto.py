@@ -364,8 +364,13 @@ def procesar_ens(datos: dict[str, Any]) -> pd.DataFrame:
 
 
 def cargar_ens() -> pd.DataFrame:
+    if base.hoy_argentina() > base.CAMPANIA_END:
+        return pd.DataFrame(columns=COLUMNAS)
     datos = base.consultar_ecmwf_ens()
     pronostico = procesar_ens(datos)
+    pronostico = pronostico.loc[
+        pd.to_datetime(pronostico["Fecha"]).dt.date <= base.CAMPANIA_END
+    ].copy()
     base.DIRECTORIO_PRONOSTICOS.mkdir(parents=True, exist_ok=True)
     marca = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     archivo = (
@@ -390,6 +395,8 @@ def validar(df: pd.DataFrame, fin: date) -> None:
     fechas = pd.to_datetime(df["Fecha"], errors="coerce")
     if fechas.isna().any():
         raise ValueError("Hay fechas inválidas en la serie final.")
+    if (fechas.dt.date > base.CAMPANIA_END).any():
+        raise ValueError("Hay fechas posteriores al cierre de campaña.")
     if fechas.duplicated().any():
         raise ValueError(
             "Hay fechas duplicadas: "
@@ -412,7 +419,7 @@ def validar(df: pd.DataFrame, fin: date) -> None:
     if faltantes:
         raise ValueError("La serie final no es continua; faltan: " + resumen(faltantes))
     pronostico = df["TipoDato"].astype(str).eq("Pronostico")
-    if not pronostico.any():
+    if not pronostico.any() and base.hoy_argentina() <= base.CAMPANIA_END:
         raise ValueError("No hay filas de pronóstico.")
     for operativo, percentil in (
         ("TMAX", "TMAX_P50"), ("TMIN", "TMIN_P50"),
@@ -432,7 +439,7 @@ def validar(df: pd.DataFrame, fin: date) -> None:
 
 def ejecutar() -> pd.DataFrame:
     hoy = base.hoy_argentina()
-    ayer = hoy - timedelta(days=1)
+    ayer = min(hoy - timedelta(days=1), base.CAMPANIA_END)
     observaciones, estado_siga = base.obtener_siga_dataframe(base.CAMPANIA_START, ayer)
     observaciones, tmedia_derivada, observaciones_descartadas = depurar_observaciones(
         observaciones
@@ -454,7 +461,7 @@ def ejecutar() -> pd.DataFrame:
     pronostico = pronostico.loc[
         pd.to_datetime(pronostico["Fecha"], errors="coerce").dt.date >= hoy
     ].copy()
-    if pronostico.empty:
+    if pronostico.empty and hoy <= base.CAMPANIA_END:
         raise ValueError("ECMWF ENS no devolvió filas desde la fecha actual.")
 
     consolidado = columnas(
@@ -472,7 +479,7 @@ def ejecutar() -> pd.DataFrame:
     )
     fin_pronostico = pd.to_datetime(
         pronostico["Fecha"], errors="coerce"
-    ).max().date()
+    ).max().date() if not pronostico.empty else base.CAMPANIA_END
     consolidado = consolidado.loc[
         (consolidado["Fecha_dt"].dt.date >= base.CAMPANIA_START)
         & (consolidado["Fecha_dt"].dt.date <= fin_pronostico)
@@ -506,13 +513,14 @@ def ejecutar() -> pd.DataFrame:
             "ECMWF_IFS_HISTORICO" if len(provisionales) else None
         ),
         "filas_provisionales": len(provisionales),
-        "fuente_pronostico": "ECMWF_IFS_ENS_025",
+        "fecha_fin_campania": base.CAMPANIA_END.isoformat(),
+        "fuente_pronostico": "ECMWF_IFS_ENS_025" if len(pronostico) else None,
         "estadistico_operativo": "P50",
-        "inicio_pronostico": str(pronostico["Fecha"].min()),
-        "fin_pronostico": str(pronostico["Fecha"].max()),
+        "inicio_pronostico": str(pronostico["Fecha"].min()) if len(pronostico) else None,
+        "fin_pronostico": str(pronostico["Fecha"].max()) if len(pronostico) else None,
         "miembros_validos_min": int(
             pd.to_numeric(pronostico["N_miembros"], errors="coerce").min()
-        ),
+        ) if len(pronostico) else None,
         "huecos_finales": huecos(
             consolidado, base.CAMPANIA_START, fin_pronostico
         ),
@@ -537,3 +545,4 @@ if __name__ == "__main__":
             file=sys.stderr,
         )
         raise SystemExit(1)
+
