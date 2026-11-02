@@ -49,16 +49,51 @@ La serie operativa utiliza una jerarquía explícita de fuentes:
 
 La precipitación faltante nunca se interpreta como cero. Si falta únicamente TMEDIA y Tmax/Tmin son válidas, se deriva desde ambas temperaturas. El ensamble se empareja por identificador de miembro, exige 24 horas válidas por día y conserva medias, P10, P50 y P90 para auditoría. Los datos provisionales se reemplazan automáticamente cuando SIGA publica una observación completa.
 
-### Fin de carga de la campaña 2026
+### Campaña vigente y actualización automática
 
-La última fecha meteorológica es el **1 de octubre de 2026, inclusive**.
-El pronóstico de siete días se recorta al alcanzar ese límite, tanto en la
-serie operativa como en los nuevos archivos de pronóstico. Desde el 2 de
-octubre no se consulta el ensamble; las actualizaciones de SIGA y del puente
-provisional quedan limitadas al 1 de octubre, permitiendo incorporar la
-observación de ese día cuando se publique y reemplazar datos provisionales.
-La validación admite una serie cerrada sin pronóstico y rechaza fechas
-posteriores al cierre. Los archivos históricos existentes se conservan.
+Cada campaña carga clima del **1 de enero al 1 de octubre** (inclusive) del año en curso, hora de Argentina. Mientras
+la campaña está abierta, la serie se actualiza automáticamente dos veces por día (07:30 y 15:30): SIGA–INTA hasta
+ayer, puente provisional ECMWF IFS para los días que SIGA todavía no publicó y pronóstico ECMWF ENS (P50) de los
+siete días siguientes; el pronóstico se recorta al 1 de octubre.
+
+Del 2 de octubre al 31 de diciembre la campaña queda cerrada: no se consulta el ensamble y la serie se conserva. El
+**1 de enero se reinicia automáticamente la carga** con la campaña nueva (la de 2027 empieza el 1/01/2027); mientras
+SIGA no publica días del año, el puente provisional ECMWF los cubre, y la caché SIGA se limita a la campaña vigente.
+Las variables `CAMPANIA_INICIO` y `CAMPANIA_FIN` (AAAA-MM-DD) permiten fijar otras fechas. Los archivos de pronóstico
+históricos se conservan.
+
+## Alerta validada de flushes (sección independiente)
+
+Debajo del motor PREDWEEM, la app muestra una **alerta de flushes**: la probabilidad de que en los próximos 7 días
+emerja ≥ 5 % de la campaña, con dos niveles fijos (*Atención* desde 15 %, *Alerta* desde 25 %). Es la alerta calibrada
+con 17 campañas de Bordenave (`alerta_lolmu.py`, `visualizacion_alerta_lolmu.py`, `alerta_lolmu_params.json`), sin
+reajustar. No modifica el motor ni sus resultados.
+
+Combina el calendario medio de emergencia de LOLMU, la respuesta a las lluvias ya registradas y, opcionalmente, la
+fecha de las primeras plántulas del lote (que además ancla el reloj térmico de la ventana de control 600–800 °Cd;
+hasta entonces se usa el primer pico validado del motor) y los conteos. Las semanas que un conteo posterior en cero
+(sin plántulas previas) confirma sin emergencia quedan por debajo de *Atención*.
+
+Validación con los conteos de San Pedro publicados en el gemelo digital (2023 y 2024 con su clima; 2026 con el clima
+de esta app): 30 intervalos entre conteos, 6 con flush. Alerta emitida al comienzo de cada intervalo:
+
+| Información disponible | AUC | 2023 | 2024 | 2026 | Flushes en *Alerta* | Intervalos sin flush en *Alerta* |
+|---|---|---|---|---|---|---|
+| Solo clima | 0,79 | 1,00 | 0,91 | 0,50 | 4 de 6 | 6 de 24 |
+| + primeras plántulas | 0,83 | 1,00 | 0,91 | 0,67 | 5 de 6 | 6 de 24 |
+| + conteos | 0,85 | 0,88 | 0,95 | 0,67 | 5 de 6 | 6 de 24 |
+| Gemelo `SAN-PEDRO_digitaltween` (motor SP-FINAL-2025-2026, calibración local) | 0,58 | 0,69 | 0,61 | 0,53 | — | — |
+
+El gemelo usó el clima observado de los 7 días siguientes (pronóstico perfecto) y su motor se calibró con 2026; aun
+así la alerta lo supera en las tres campañas. Límites: tres campañas y pocos flushes; la emergencia varía mucho entre
+años (50 % al 19/02 en 2026, al 14/04 en 2024 y al 03/05 en 2023). Ni un calendario propio de San Pedro ni un factor
+de agotamiento de la cohorte mejoraron de forma clara la alerta, por eso se usa sin cambios. Los datos están en
+`data/campanias/`.
+
+La página conserva el motor (con la parametrización congelada 2025–2026) y su horizonte de pronóstico; se retiraron
+la sección «Datos del lote», el mapa de riesgo, las pestañas y el reporte del motor, y la imagen de fondo (fondo liso
+claro). La barra lateral conserva solo los parámetros de la ventana de control. La descarga final reúne los
+resultados de la alerta.
 
 ## Despliegue desde repositorio privado
 
