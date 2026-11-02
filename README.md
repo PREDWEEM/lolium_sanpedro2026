@@ -72,7 +72,7 @@ reajustar. No modifica el motor ni sus resultados.
 Combina el calendario medio de emergencia de LOLMU, la respuesta a las lluvias ya registradas y, opcionalmente, la
 fecha de las primeras plántulas del lote (que además ancla el reloj térmico de la ventana de control 600–800 °Cd;
 hasta entonces se usa el primer pico validado del motor) y los conteos. Las semanas que un conteo posterior en cero
-(sin plántulas previas) confirma sin emergencia quedan por debajo de *Atención*.
+(sin plántulas previas) confirma sin emergencia quedan en 0 %.
 
 Validación con los conteos de San Pedro publicados en el gemelo digital (2023 y 2024 con su clima; 2026 con el clima
 de esta app): 30 intervalos entre conteos, 6 con flush. Alerta emitida al comienzo de cada intervalo:
