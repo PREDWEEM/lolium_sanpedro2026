@@ -62,7 +62,7 @@ SIGA no publica días del año, el puente provisional ECMWF los cubre, y la cach
 Las variables `CAMPANIA_INICIO` y `CAMPANIA_FIN` (AAAA-MM-DD) permiten fijar otras fechas. Los archivos de pronóstico
 históricos se conservan.
 
-## Alerta validada de flushes (sección independiente)
+## Alerta validada de grandes flujos (sección independiente)
 
 Debajo del motor PREDWEEM, la app muestra una **alerta de flushes**: la probabilidad de que en los próximos 7 días
 emerja ≥ 5 % de la campaña, con dos niveles fijos (*Atención* desde 15 %, *Alerta* desde 25 %). Es la alerta calibrada
@@ -101,13 +101,13 @@ La aplicación está preparada para utilizar archivos locales incluidos en el ch
 
 La actualización automática de SIGA–INTA y ECMWF ENS continúa ejecutándose mediante GitHub Actions. Antes de cambiar la visibilidad, revise la guía [PRIVATE_REPOSITORY.md](PRIVATE_REPOSITORY.md), autorice a Streamlit para acceder a repositorios privados y ejecute la prueba manual del workflow meteorológico.
 
-## Aviso de emergencia tardía (ventana de siembra)
+## Aviso de flujos tardíos (ventana de siembra)
 
-Del 1 de mayo al 1 de julio la app muestra además la **probabilidad de emergencia tardía**: que en los próximos 7 días
-emerja al menos 2 % de la campaña, con aviso desde 20 %. En esa época los flushes de ≥ 5 % son raros, pero pocas plantas
+Del 1 de mayo al 1 de julio la app muestra además la **probabilidad de flujos tardíos**: que en los próximos 7 días
+emerja al menos 2 % de la campaña, con aviso desde 20 %. En esa época los grandes flujos (≥ 5 %) son raros, pero pocas plantas
 por semana importan para decidir la fecha de siembra. Es la misma alerta recalibrada por nivel de información (`tardia`
-en `alerta_lolmu_params.json`). Aparece en un recuadro debajo de la alerta, en la fila «Siembra» del **semáforo
-semanal** del gráfico (violeta fuerte = emergencia tardía probable; la fila «Flush» repite el nivel de cada semana) y en
+en `alerta_lolmu_params.json`). Aparece en un recuadro debajo de la alerta, en el **semáforo
+semanal** del gráfico (fila «Flujos tardíos»: violeta fuerte = flujo tardío probable; la fila «Grandes flujos» repite el nivel de cada semana) y en
 la descarga en Excel.
 
 | Información | AUC Bordenave (17 campañas, 132 semanas, 42 con ≥ 2 %) | Detectadas con el aviso | Semanas marcadas |

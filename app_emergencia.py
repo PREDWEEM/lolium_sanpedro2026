@@ -119,12 +119,12 @@ NOTA_SAN_PEDRO = (
     "**Validación en San Pedro.** La alerta se calibró en Bordenave y se probó, sin reajustarla, con los conteos de "
     "San Pedro publicados en el gemelo digital: 2023 y 2024 (clima del ensayo) y 2026 (clima de esta app); 30 intervalos "
     "entre conteos, 6 con emergencia ≥ 5 % de la campaña por semana. Emitida al comienzo de cada intervalo, la alerta "
-    "separó los intervalos con flush con AUC 0,79 solo con clima, 0,83 con la fecha de primeras plántulas y 0,85 con "
-    "conteos (gemelo de San Pedro: 0,58). Con primeras plántulas, 5 de los 6 flushes quedaron en *Alerta*; también 6 "
-    "de los 24 intervalos sin flush.\n\n"
-    "**Límites en San Pedro.** Tres campañas y pocos flushes. La emergencia varía mucho entre años: 50 % al 19/02 en "
-    "2026, al 14/04 en 2024 y al 03/05 en 2023. En 2026 el primer flush (01/02–21/02, 59 % de la campaña) no se "
-    "anticipó al 01/02: todavía no había lluvia registrada que lo explicara. Después de los grandes flushes de 2026 "
+    "separó los intervalos con gran flujo con AUC 0,79 solo con clima, 0,83 con la fecha de primeras plántulas y 0,85 con "
+    "conteos (gemelo de San Pedro: 0,58). Con primeras plántulas, 5 de los 6 grandes flujos quedaron en *Alerta*; también 6 "
+    "de los 24 intervalos sin gran flujo.\n\n"
+    "**Límites en San Pedro.** Tres campañas y pocos grandes flujos. La emergencia varía mucho entre años: 50 % al 19/02 en "
+    "2026, al 14/04 en 2024 y al 03/05 en 2023. En 2026 el primer gran flujo (01/02–21/02, 59 % de la campaña) no se "
+    "anticipó al 01/02: todavía no había lluvia registrada que lo explicara. Después de los grandes grandes flujos de 2026 "
     "la alerta siguió alta sin emergencia (21/02 y 04/04), por agotamiento del banco; un factor de agotamiento no "
     "mejoró de forma clara la alerta con tan pocas campañas. La curva acumulada es el calendario de Bordenave: un "
     "calendario propio de San Pedro no la mejoró. La alerta con conteos está calibrada con conteos semanales: con "
@@ -189,7 +189,7 @@ if isinstance(_resultados_alerta, dict) and _resultados_alerta:
     st.subheader("📥 Descarga de resultados")
     st.caption(
         "Excel con los resultados que muestra la app para la fecha de emisión elegida: resumen (nivel y probabilidad de "
-        "flush, inicio y ventana de control 600–800 °Cd, emergencia acumulada esperada), alerta semanal, emergencia "
+        "gran flujo, inicio y ventana de control 600–800 °Cd, emergencia acumulada esperada), alerta semanal, emergencia "
         "acumulada con su rango, tiempo térmico diario desde el inicio, conteos usados, clima, parámetros y validación."
     )
     st.download_button(
