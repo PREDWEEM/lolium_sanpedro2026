@@ -41,6 +41,12 @@ from sanpedro_calibracion_final import (
     parchear_core_sanpedro,
 )
 
+# Control de acceso (ingreso con Google y usuarios aprobados). Inactivo hasta configurar los secretos [acceso] y [auth].
+import streamlit as st
+from acceso_predweem import mostrar_sesion, requerir_acceso
+
+requerir_acceso("San Pedro")
+
 _CORE_APP = Path(__file__).with_name("app_emergencia_core.py")
 _core_source = _CORE_APP.read_text(encoding="utf-8")
 _core_source = parchear_core_sanpedro(_core_source)
@@ -201,3 +207,5 @@ if isinstance(_resultados_alerta, dict) and _resultados_alerta:
         width="stretch",
         key="descarga_excel_resultados_final_san_pedro",
     )
+
+mostrar_sesion()
