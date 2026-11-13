@@ -165,26 +165,44 @@ según el modelo; en <sitio> la emergencia suele cortarse antes»: la recalibrac
 la emergencia se extiende hasta el invierno, y en sitios donde se corta antes avisa de más (en Balcarce, en mayo de 2014,
 2025 y 2026, avisó 8 semanas y hubo 2 flujos tardíos). La probabilidad se sigue mostrando.
 
-## Residual a la siembra (guía de riesgo)
+## Residual a la siembra y post-emergente (guía de riesgo)
 
-Debajo de la alerta, un recuadro siempre visible muestra el riesgo de nacimientos después de la siembra para la **fecha de
-siembra prevista** (1/05–31/07; si no se carga, el 1/06 como referencia), en tres tarjetas: riesgo (alto, medio o bajo),
-emergencia después de sembrar (mediana) y recomendación (usar residual, según infestación, o solo si el lote está muy
-infestado). Se calcula con las 3 campañas de San Pedro (`residual` en `alerta_lolmu_params.json`):
+Debajo de la alerta, un recuadro siempre visible muestra, para la **fecha de siembra prevista** (1/05–31/07; si no se
+carga, el 1/06 como referencia), el riesgo de nacimientos en dos períodos:
 
-| Siembra | Campañas con ≥ 10 % de la emergencia después de sembrar | Mediana | Riesgo | Campañas del sitio |
-|---|---|---|---|---|
-| 1/05 | 33% | 6 % | Medio | 2023: 53 % · 2024: 6 % · 2026: 2 % |
-| 15/05 | 33% | 4 % | Medio | 2023: 19 % · 2024: 4 % · 2026: 2 % |
-| 1/06 | 0% | 1 % | Bajo | 2023: 2 % · 2024: 1 % · 2026: 1 % |
-| 15/06 | 0% | 1 % | Bajo | 2023: 2 % · 2024: 1 % · 2026: 0 % |
-| 1/07 | 0% | 0 % | Bajo | 2023: 0 % · 2024: 1 % · 2026: 0 % |
+- **Residual:** de 15 días antes a 45 días después de la siembra, el período de acción promedio de un herbicida residual.
+- **Post-emergente:** más de 45 días después de la siembra, fuera del alcance del residual; lo que nace ahí se controla con
+  un graminicida post-emergente.
 
-Riesgo alto: ≥ 40 % de las campañas con ≥ 10 % de emergencia posterior; medio: 20–40 %; bajo: < 20 %. Es un **riesgo
-histórico, no una predicción de la campaña**: ni la fecha de primeras plántulas ni el clima anticiparon cuánta emergencia
-queda después de la siembra. Como la decisión depende de las plantas por m², en lotes con alta infestación aun una fracción
-chica puede ser más de 100 plantas/m². La necesidad de un graminicida post-emergente no se puede anticipar: se recomienda
-recorrer el cultivo 30–45 días después de la siembra.
+Cada período tiene tres tarjetas: riesgo, nacimientos en el período (mediana de las campañas, en plantas/m² y en % de la
+campaña) y recomendación. Se calcula con las 3 campañas de San Pedro (`residual` en `alerta_lolmu_params.json`). Las plantas/m² usan la densidad de cada campaña con conteos; las campañas que solo
+tienen la curva relativa usan la densidad de referencia del sitio (3773 pl/m² por campaña, mediana de las
+campañas con conteos):
+
+| Siembra | Nacimientos de −15 a +45 días (mediana) | Riesgo para el residual | Nacimientos después de +45 días (mediana) | Riesgo para el post-emergente | Campañas del sitio (residual / post) |
+|---|---|---|---|---|---|
+| 1/05 | 1503 pl/m² (43,6 %) | Muy alto | 34 pl/m² (0,8 %) | Alto | 2023: 1503 pl/m² / 34 pl/m² · 2024: 2953 pl/m² / 54 pl/m² · 2026: 87 pl/m² / 7 pl/m² |
+| 15/05 | 544 pl/m² (8,0 %) | Muy alto | 4 pl/m² (0,2 %) | Bajo | 2023: 1075 pl/m² / 4 pl/m² · 2024: 544 pl/m² / 54 pl/m² · 2026: 62 pl/m² / 1 pl/m² |
+| 1/06 | 190 pl/m² (2,8 %) | Muy alto | 0 pl/m² (0,0 %) | Bajo | 2023: 281 pl/m² / 0 pl/m² · 2024: 190 pl/m² / 54 pl/m² · 2026: 58 pl/m² / 0 pl/m² |
+| 15/06 | 42 pl/m² (0,8 %) | Alto | 0 pl/m² (0,0 %) | Bajo | 2023: 42 pl/m² / 0 pl/m² · 2024: 42 pl/m² / 54 pl/m² · 2026: 29 pl/m² / 0 pl/m² |
+| 1/07 | 18 pl/m² (0,3 %) | Medio | 0 pl/m² (0,0 %) | Bajo | 2023: 33 pl/m² / 0 pl/m² · 2024: 18 pl/m² / 36 pl/m² · 2026: 6 pl/m² / 0 pl/m² |
+
+El nivel de riesgo surge de las plantas/m² que nacieron en cada período en una campaña típica (mediana). Se usan plantas
+y no el % de la campaña porque en sitios con mucha densidad una fracción chica son muchas plantas (en San Pedro, 0,8 % de
+la campaña fueron 29–42 pl/m²):
+
+| Riesgo | Nacimientos en el período | Residual | Post-emergente |
+|---|---|---|---|
+| 🔴 Muy alto | ≥ 50 pl/m² | Usar residual | Prever graminicida |
+| 🟠 Alto | 20–50 pl/m² | Residual recomendado | Graminicida probable |
+| 🟡 Medio | 5–20 pl/m² | Según infestación: residual si el lote tiene alta infestación o antecedentes de raigrás | Recorrer y decidir |
+| 🟢 Bajo | < 5 pl/m² | Residual solo en lotes muy infestados | Poco probable |
+
+Las densidades son las registradas en los ensayos del sitio: en un lote con menos raigrás el riesgo es menor.
+
+Debajo de las tarjetas se indica el valor de cada campaña del sitio y qué proporción de las campañas cayó en cada nivel. Es
+un **riesgo histórico, no una predicción de la campaña**: ni la fecha de primeras plántulas ni el clima anticiparon cuánta
+emergencia queda después de la siembra. En todos los casos conviene recorrer el cultivo 30–45 días después de la siembra.
 
 ## Condiciones de uso
 
