@@ -168,19 +168,19 @@ la emergencia se extiende hasta el invierno, y en sitios donde se corta antes av
 ## Residual a la siembra (guía de riesgo)
 
 Debajo de la alerta, un recuadro siempre visible muestra, para la **fecha de siembra prevista** (1/05–31/07; si no se
-carga, el 1/06 como referencia), el riesgo de nacimientos en la **ventana de acción del residual: de 15 días antes a 45 días
+carga, el 1/06 como referencia), el riesgo de nacimientos en la **ventana de acción del residual: de 10 días antes a 45 días
 después de la siembra**, el período de acción promedio de un herbicida residual. Tiene tres tarjetas: riesgo, nacimientos en
 la ventana (mediana de las campañas, en plantas/m² y en % de la campaña) y recomendación. Se calcula con las 3 campañas de San Pedro (`residual` en `alerta_lolmu_params.json`). Las plantas/m² usan la densidad de cada campaña con conteos; las campañas que solo
 tienen la curva relativa usan la densidad de referencia del sitio (3773 pl/m² por campaña, mediana de las
 campañas con conteos):
 
-| Siembra | Nacimientos de −15 a +45 días (mediana) | Riesgo para el residual | Campañas del sitio |
+| Siembra | Nacimientos de −10 a +45 días (mediana) | Riesgo para el residual | Campañas del sitio |
 |---|---|---|---|
-| 1/05 | 1503 pl/m² (43,6 %) | Muy alto | 2023: 1503 pl/m² · 2024: 2953 pl/m² · 2026: 87 pl/m² |
-| 15/05 | 544 pl/m² (8,0 %) | Muy alto | 2023: 1075 pl/m² · 2024: 544 pl/m² · 2026: 62 pl/m² |
-| 1/06 | 190 pl/m² (2,8 %) | Muy alto | 2023: 281 pl/m² · 2024: 190 pl/m² · 2026: 58 pl/m² |
-| 15/06 | 42 pl/m² (0,8 %) | Alto | 2023: 42 pl/m² · 2024: 42 pl/m² · 2026: 29 pl/m² |
-| 1/07 | 18 pl/m² (0,3 %) | Medio | 2023: 33 pl/m² · 2024: 18 pl/m² · 2026: 6 pl/m² |
+| 1/05 | 1345 pl/m² (30,9 %) | Muy alto | 2023: 1345 pl/m² · 2024: 2093 pl/m² · 2026: 77 pl/m² |
+| 15/05 | 200 pl/m² (3,0 %) | Muy alto | 2023: 840 pl/m² · 2024: 200 pl/m² · 2026: 59 pl/m² |
+| 1/06 | 48 pl/m² (2,0 %) | Alto | 2023: 47 pl/m² · 2024: 137 pl/m² · 2026: 48 pl/m² |
+| 15/06 | 21 pl/m² (0,6 %) | Alto | 2023: 39 pl/m² · 2024: 0 pl/m² · 2026: 21 pl/m² |
+| 1/07 | 18 pl/m² (0,3 %) | Medio | 2023: 22 pl/m² · 2024: 18 pl/m² · 2026: 4 pl/m² |
 
 El nivel de riesgo surge de las plantas/m² que nacieron en la ventana en una campaña típica (mediana). Se usan plantas
 y no el % de la campaña porque en sitios con mucha densidad una fracción chica son muchas plantas (en San Pedro, 0,8 % de
