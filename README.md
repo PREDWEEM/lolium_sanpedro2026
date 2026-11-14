@@ -70,7 +70,7 @@ con 17 campañas de Bordenave (`alerta_lolmu.py`, `visualizacion_alerta_lolmu.py
 reajustar. No modifica el motor ni sus resultados.
 
 Combina el calendario medio de emergencia de LOLMU, la respuesta a las lluvias ya registradas y, opcionalmente, la
-fecha de las primeras plántulas del lote (que además ancla el reloj térmico de la ventana de control 600–800 °Cd;
+fecha de las primeras plántulas del lote (que además ancla el reloj térmico de la ventana del graminicida de barbecho 600–800 °Cd;
 sin ese dato la ventana no se calcula) y los conteos. Las semanas que un conteo posterior en cero
 (sin plántulas previas) confirma sin emergencia quedan en 0 %.
 
@@ -92,7 +92,7 @@ de agotamiento de la cohorte mejoraron de forma clara la alerta, por eso se usa 
 
 La página conserva el motor (con la parametrización congelada 2025–2026) y su horizonte de pronóstico; se retiraron
 la sección «Datos del lote», el mapa de riesgo, las pestañas y el reporte del motor, y la imagen de fondo (fondo liso
-claro). La barra lateral conserva solo los parámetros de la ventana de control. La descarga final reúne los
+claro). La barra lateral conserva solo los parámetros de la ventana del graminicida de barbecho. La descarga final reúne los
 resultados de la alerta.
 
 ## Despliegue desde repositorio privado
@@ -163,6 +163,19 @@ según el modelo; en <sitio> la emergencia suele cortarse antes»: la recalibrac
 la emergencia se extiende hasta el invierno, y en sitios donde se corta antes avisa de más (en Balcarce, en mayo de 2014,
 2025 y 2026, avisó 8 semanas y hubo 2 flujos tardíos). La probabilidad se sigue mostrando.
 
+## Qué hacer esta semana
+
+Arriba de la alerta, un recuadro resume las acciones de la semana según la fecha y los datos cargados: recorrer el lote ante
+un gran flujo probable o hasta ver las primeras plántulas; el momento del **graminicida de barbecho**; si conviene un
+**residual** a la siembra prevista y si hay lluvia para activarlo; y la recorrida de flujos tardíos. El mismo resumen va en el Excel.
+
+- **Graminicida de barbecho:** la ventana de 600–800 °Cd desde las primeras plántulas corresponde al raigrás de **4 a 6
+  macollos**, momento óptimo para intervenir con un graminicida de barbecho.
+- **Activación del residual:** suma la lluvia registrada y pronosticada en los 7 días desde la siembra; con 10 mm o más la
+  activación es probable (el mínimo exacto depende del producto).
+- **Julio:** la alerta no anticipa los flujos tardíos; la emergencia que acompaña a la siembra se controla con el residual,
+  y desde el 1/08 se recomienda recorrer los lotes cada 2 semanas.
+
 ## Residual a la siembra (guía de riesgo)
 
 Debajo de la alerta, un recuadro siempre visible muestra, para la **fecha de siembra prevista** (1/05–31/07; si no se
@@ -222,7 +235,7 @@ PREDWEEM es una herramienta de soporte para decisiones y no sustituye el diagnó
 
 La alerta, su visualización y el control de acceso son comunes a las 8 apps de Lolium y están en el paquete
 [PREDWEEM/LOLIUM-COMUN](https://github.com/PREDWEEM/LOLIUM-COMUN), fijado por versión en `requirements.txt`
-(`lolium-comun @ git+https://github.com/PREDWEEM/LOLIUM-COMUN@<commit>  # v1.3.3`). En esta app, `alerta_lolmu.py`,
+(`lolium-comun @ git+https://github.com/PREDWEEM/LOLIUM-COMUN@<commit>  # v1.4.0`). En esta app, `alerta_lolmu.py`,
 `visualizacion_alerta_lolmu.py` y `acceso_predweem.py` son archivos puente que cargan ese paquete con los parámetros de este
 sitio (`alerta_lolmu_params.json`), que siguen acá. Los cambios a la alerta se hacen en LOLIUM-COMUN y llegan a la app al
 actualizar la versión en `requirements.txt`.
