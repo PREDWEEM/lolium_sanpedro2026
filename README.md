@@ -16,6 +16,16 @@ PREDWEEM es una herramienta de apoyo a la toma de decisiones agronómicas basada
 
 La implementación de este repositorio está orientada a **San Pedro** y utiliza una **parametrización local congelada calibrada conjuntamente con las campañas completas 2025 y 2026**. La ANN original se mantiene sin modificaciones.
 
+## Sin motor PREDWEEM (noviembre de 2026)
+
+La página ya no ejecuta el motor PREDWEEM anterior (red neuronal y balance hídrico). Muestra solo la **alerta de grandes
+flujos** del paquete `lolium-comun` con el clima diario del repositorio (`meteo_daily.csv`): qué hacer esta semana,
+probabilidad de gran flujo, ventana del graminicida de barbecho, residual a la siembra, flujos tardíos y descarga en Excel.
+El inicio de la emergencia estimado por el motor (su primer pico) erró 12–14 días en promedio en 31 campañas-sitio, no
+mejor que una fecha fija, y la alerta ya no lo usaba: el reloj térmico parte de la fecha de primeras plántulas. El encabezado,
+la barra lateral, la lectura del clima y la descarga vienen de `lolium_comun.pagina`. Los archivos del motor (`*_core.py`,
+modelos `.npy`/`.pkl` y sus parches) quedan en el repositorio solo como referencia.
+
 ## Configuración San Pedro 2026 — versión final
 
 - Coordenadas operativas: `-33.7328, -59.7965`.
@@ -64,10 +74,10 @@ históricos se conservan.
 
 ## Alerta validada de grandes flujos (sección independiente)
 
-Debajo del motor PREDWEEM, la app muestra una **alerta de flushes**: la probabilidad de que en los próximos 7 días
+La app muestra una **alerta de flushes**: la probabilidad de que en los próximos 7 días
 emerja ≥ 5 % de la campaña, con dos niveles fijos (*Atención* desde 15 %, *Alerta* desde 25 %). Es la alerta calibrada
 con 17 campañas de Bordenave (`alerta_lolmu.py`, `visualizacion_alerta_lolmu.py`, `alerta_lolmu_params.json`), sin
-reajustar. No modifica el motor ni sus resultados.
+reajustar.
 
 Combina el calendario medio de emergencia de LOLMU, la respuesta a las lluvias ya registradas y, opcionalmente, la
 fecha de las primeras plántulas del lote (que además ancla el reloj térmico de la ventana del graminicida de barbecho 600–800 °Cd;
@@ -90,9 +100,7 @@ años (50 % al 19/02 en 2026, al 14/04 en 2024 y al 03/05 en 2023). Ni un calend
 de agotamiento de la cohorte mejoraron de forma clara la alerta, por eso se usa sin cambios. Los datos están en
 `data/campanias/`.
 
-La página conserva el motor (con la parametrización congelada 2025–2026) y su horizonte de pronóstico; se retiraron
-la sección «Datos del lote», el mapa de riesgo, las pestañas y el reporte del motor, y la imagen de fondo (fondo liso
-claro). La barra lateral conserva solo los parámetros de la ventana del graminicida de barbecho. La descarga final reúne los
+La página ya no ejecuta el motor (parametrización congelada 2025–2026, que queda en el repositorio como referencia). La barra lateral conserva solo los parámetros de la ventana del graminicida de barbecho. La descarga final reúne los
 resultados de la alerta.
 
 ## Despliegue desde repositorio privado
@@ -212,7 +220,7 @@ PREDWEEM es una herramienta de soporte para decisiones y no sustituye el diagnó
 
 La alerta, su visualización y el control de acceso son comunes a las 8 apps de Lolium y están en el paquete
 [PREDWEEM/LOLIUM-COMUN](https://github.com/PREDWEEM/LOLIUM-COMUN), fijado por versión en `requirements.txt`
-(`lolium-comun @ git+https://github.com/PREDWEEM/LOLIUM-COMUN@<commit>  # v1.4.1`). En esta app, `alerta_lolmu.py`,
+(`lolium-comun @ git+https://github.com/PREDWEEM/LOLIUM-COMUN@<commit>  # v1.5.0`). En esta app, `alerta_lolmu.py`,
 `visualizacion_alerta_lolmu.py` y `acceso_predweem.py` son archivos puente que cargan ese paquete con los parámetros de este
 sitio (`alerta_lolmu_params.json`), que siguen acá. Los cambios a la alerta se hacen en LOLIUM-COMUN y llegan a la app al
 actualizar la versión en `requirements.txt`.
