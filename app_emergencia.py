@@ -13,8 +13,8 @@ La aplicación base se conserva en ``app_emergencia_core.py`` para auditoría. A
   congelados) y el calibrador; la barra lateral conserva los parámetros de la ventana de control.
 
 El motor sigue calculando como antes: su primer pico validado se usa como inicio estimado del reloj térmico hasta que
-se informa la fecha de las primeras plántulas. La alerta (``alerta_lolmu.py``) es la calibrada con 17 campañas de
-Bordenave y validada con los conteos de San Pedro 2023, 2024 y 2026.
+se informa la fecha de las primeras plántulas. La alerta (``alerta_lolmu.py``) es la del paquete lolium-comun,
+validada con los conteos de San Pedro 2023, 2024 y 2026.
 """
 import io
 from pathlib import Path
@@ -122,7 +122,7 @@ if "df" in globals() and isinstance(df, pd.DataFrame) and not df.empty:
     mostrar_horizonte_pronostico(df, "San Pedro")
 
 NOTA_SAN_PEDRO = (
-    "**Validación en San Pedro.** La alerta se calibró en Bordenave y se probó, sin reajustarla, con los conteos de "
+    "**Validación en San Pedro.** La alerta se probó, sin reajustarla, con los conteos de "
     "San Pedro publicados en el gemelo digital: 2023 y 2024 (clima del ensayo) y 2026 (clima de esta app); 30 intervalos "
     "entre conteos, 6 con emergencia ≥ 5 % de la campaña por semana. Emitida al comienzo de cada intervalo, la alerta "
     "separó los intervalos con gran flujo con AUC 0,79 solo con clima, 0,83 con la fecha de primeras plántulas y 0,85 con "
@@ -132,7 +132,7 @@ NOTA_SAN_PEDRO = (
     "2026, al 14/04 en 2024 y al 03/05 en 2023. En 2026 el primer gran flujo (01/02–21/02, 59 % de la campaña) no se "
     "anticipó al 01/02: todavía no había lluvia registrada que lo explicara. Después de los grandes grandes flujos de 2026 "
     "la alerta siguió alta sin emergencia (21/02 y 04/04), por agotamiento del banco; un factor de agotamiento no "
-    "mejoró de forma clara la alerta con tan pocas campañas. La curva acumulada es el calendario de Bordenave: un "
+    "mejoró de forma clara la alerta con tan pocas campañas. La curva acumulada es el calendario de referencia regional: un "
     "calendario propio de San Pedro no la mejoró. La alerta con conteos está calibrada con conteos semanales: con "
     "recorridas cada 2–3 semanas, conviene usar sobre todo la fecha de primeras plántulas."
 )
